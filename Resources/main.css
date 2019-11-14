@@ -1,0 +1,12 @@
+#centralWidget {
+	background-color: rgb(255,255,255);
+	border-radius: 8px;
+    border: 1px solid rgb(79, 133, 233);
+}
+
+
+#widgetTitlebar {
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+	background-color: rgb(79, 133, 233);
+}

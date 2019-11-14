@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/QtFramelessWindowSample">
+        <file>Resources/main.css</file>
+    </qresource>
+</RCC>
