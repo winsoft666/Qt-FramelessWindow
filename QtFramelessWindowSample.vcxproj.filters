@@ -34,16 +34,10 @@
     <ClCompile Include="QtFramelessWindowSample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FramelessMainWindow.cpp">
-      <Filter>FramelessWindow</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QtFramelessWindowSample.h">
       <Filter>Header Files</Filter>
-    </QtMoc>
-    <QtMoc Include="FramelessMainWindow.h">
-      <Filter>FramelessWindow</Filter>
     </QtMoc>
   </ItemGroup>
   <ItemGroup>
@@ -60,5 +54,10 @@
     <None Include="Resources\main.css">
       <Filter>Resource Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FramelessWindow.hpp">
+      <Filter>FramelessWindow</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

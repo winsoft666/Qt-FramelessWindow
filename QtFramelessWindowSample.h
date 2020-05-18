@@ -1,9 +1,9 @@
 #pragma once
 
-#include "FramelessMainWindow.h"
+#include "FramelessWindow.hpp"
 #include "ui_QtFramelessWindowSample.h"
 
-class QtFramelessWindowSample : public FramelessMainWindow
+class QtFramelessWindowSample : public FramelessWindow<QMainWindow>
 {
     Q_OBJECT
 

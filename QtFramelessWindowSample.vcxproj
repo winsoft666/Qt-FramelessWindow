@@ -50,11 +50,11 @@
     <Import Project="$(QtMsBuild)\qt_defaults.props" />
   </ImportGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <QtInstall>5.13.1_x86</QtInstall>
+    <QtInstall>5.12.8_x86_shared</QtInstall>
     <QtModules>core;gui;widgets</QtModules>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <QtInstall>5.13.1_x86</QtInstall>
+    <QtInstall>5.12.8_x86_shared</QtInstall>
     <QtModules>core;gui;widgets</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
@@ -88,7 +88,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FramelessMainWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="QtFramelessWindowSample.cpp" />
   </ItemGroup>
@@ -102,10 +101,10 @@
     <QtRcc Include="QtFramelessWindowSample.qrc" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="FramelessMainWindow.h" />
+    <None Include="Resources\main.css" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\main.css" />
+    <ClInclude Include="FramelessWindow.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
