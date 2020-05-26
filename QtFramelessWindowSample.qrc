@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/QtFramelessWindowSample">
         <file>Resources/main.css</file>
+        <file>Resources/close.svg</file>
+        <file>Resources/close_h.svg</file>
+        <file>Resources/SetttingWnd.css</file>
     </qresource>
 </RCC>

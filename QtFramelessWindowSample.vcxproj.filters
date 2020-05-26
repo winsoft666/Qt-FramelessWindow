@@ -34,9 +34,15 @@
     <ClCompile Include="QtFramelessWindowSample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SettingWnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QtFramelessWindowSample.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="SettingWnd.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

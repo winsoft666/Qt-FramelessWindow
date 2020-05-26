@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>605</width>
-    <height>397</height>
+    <width>883</width>
+    <height>587</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,6 +43,13 @@
         <widget class="QLabel" name="labelTitle">
          <property name="text">
           <string>Qt Frameless Window Sample</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="pushButtonDialog">
+         <property name="text">
+          <string>Dialog</string>
          </property>
         </widget>
        </item>

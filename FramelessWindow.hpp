@@ -45,8 +45,6 @@ class FramelessWindow : public T {
     ::SetWindowLongPtrW(hWnd, GWL_STYLE, static_cast<LONG>(dwNewStyle));
 
     SetShadow(m_bSystemShadow);
-
-    setVisible(true);
   }
 
   FramelessWindow::~FramelessWindow() {}
@@ -132,9 +130,9 @@ class FramelessWindow : public T {
         POINT mousePT;
         mousePT.x = GET_X_LPARAM(msg->lParam);
         mousePT.y = GET_Y_LPARAM(msg->lParam);
-        qInfo() << "Screen Mouse Pos: " << mousePT.x << ", " << mousePT.y;
+        //qInfo() << "Screen Mouse Pos: " << mousePT.x << ", " << mousePT.y;
         ::ScreenToClient(hWnd, &mousePT);
-        qInfo() << "Client Mouse Pos: " << mousePT.x << ", " << mousePT.y;
+        //qInfo() << "Client Mouse Pos: " << mousePT.x << ", " << mousePT.y;
 
         if (m_bResizeable) {
           bool bResizeWidth = minimumWidth() != maximumWidth();
@@ -198,20 +196,21 @@ class FramelessWindow : public T {
           return true;
 
         QMargins margins = contentsMargins();
-        qInfo() << mousePT.y;
+        //qInfo() << "margins:" << margins;
+        //qInfo() << "x: " << mousePT.x << ", y: " << mousePT.y;
         QPoint pos(mousePT.x / dpr - margins.left(), mousePT.y  / dpr - margins.top() );
 
         bool bInTitleBar = false;
         bool bExcept = false;
         for (auto& w : m_titlebarWidget) {
-          qInfo() << w->rect();
           if (w->rect().contains(pos)) {
             QWidget* child = w->childAt(pos);
             if (child) {
-              qInfo() << child;
+              //qInfo() << child;
               bExcept = false;
               for (auto& e : m_titlebarExceptWidgetPointer) {
-                if (child == e) {
+                //qInfo() << child->objectName() << ", " << e->objectName();
+                if (child->objectName() == e->objectName()) {
                   bExcept = true;
                   break;
                 }

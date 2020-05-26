@@ -90,6 +90,7 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="QtFramelessWindowSample.cpp" />
+    <ClCompile Include="SettingWnd.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="QtFramelessWindowSample.h" />
@@ -105,6 +106,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FramelessWindow.hpp" />
+    <QtMoc Include="SettingWnd.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
