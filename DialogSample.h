@@ -5,26 +5,22 @@
 
 class QGraphicsDropShadowEffect;
 
-class SettingWnd : public FramelessWindow<QDialog> {
+class DialogSample : public FramelessWindow<QDialog> {
   Q_OBJECT
  public:
-  SettingWnd(QWidget* parent = nullptr);
-  ~SettingWnd();
-
+  DialogSample(QWidget* parent = nullptr);
+  ~DialogSample();
 
  protected:
-  void keyPressEvent(QKeyEvent* event) override;
-  void closeEvent(QCloseEvent* event) override;
   void setupUi();
 
   void setShadowEnable(bool enable);
 
+ protected:
   QWidget* centralWidget_;
   QPushButton* pushButtonClose_;
-  QCheckBox* checkboxAutoStart_;
   QLabel* labelSaveDir_;
   QPushButton* pushButtonChangeSaveDir_;
-  QLabel* labelCurVer_;
   QLabel* labelTitle_;
   QPushButton* pushButtonSaveDir_;
 

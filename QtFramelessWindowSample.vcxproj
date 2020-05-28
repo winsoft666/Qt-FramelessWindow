@@ -51,7 +51,7 @@
   </ImportGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <QtInstall>5.12.8_x86_shared</QtInstall>
-    <QtModules>core;gui;widgets</QtModules>
+    <QtModules>core;gui;location;positioning;qml;quick;quickwidgets;svg;uitools;widgets</QtModules>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <QtInstall>5.12.8_x86_shared</QtInstall>
@@ -89,24 +89,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="QtFramelessWindowSample.cpp" />
-    <ClCompile Include="SettingWnd.cpp" />
+    <ClCompile Include="MainWindowSample.cpp" />
+    <ClCompile Include="DialogSample.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <QtMoc Include="QtFramelessWindowSample.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <QtUic Include="QtFramelessWindowSample.ui" />
+    <QtMoc Include="MainWindowSample.h" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="QtFramelessWindowSample.qrc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\main.css" />
+    <None Include="Resources\DialogSample.css" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FramelessWindow.hpp" />
-    <QtMoc Include="SettingWnd.h" />
+    <QtMoc Include="DialogSample.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

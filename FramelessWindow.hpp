@@ -1,3 +1,17 @@
+/*******************************************************************************
+ * Copyright (C) 2020 - 2025, winsoft666, <winsoft666@outlook.com>.
+ *
+ * THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
+ * EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
+ *
+ * Expect bugs
+ *
+ * Please use and enjoy. Please let me know of any bugs/improvements
+ * that you have found/implemented and I will fix/incorporate them into this
+ * file.
+ *******************************************************************************/
+
 #ifndef FRAMELESS_WINDOW_HPP_
 #define FRAMELESS_WINDOW_HPP_
 #pragma once
@@ -5,257 +19,287 @@
 #include <QString>
 #include <QFile>
 #include <QWidget>
-#include <QDebug>
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <windows.h>
-#include <windowsx.h>
-#include <dwmapi.h>
-
-#pragma comment(lib, "Dwmapi.lib")
-#endif
+#include <QScreen>
+#include <QMouseEvent>
+#include <QApplication>
 
 template <typename T>
 class FramelessWindow : public T {
  public:
-  FramelessWindow::FramelessWindow(bool bTranslucentBackground,
-                                   bool bSystemShadow,
-                                   bool bResizeable,
-                                   QWidget* parent = Q_NULLPTR)
-      : T(parent)
-      , m_bTranslucentBackground(bTranslucentBackground)
-      , m_bSystemShadow(bSystemShadow)
-      , m_bResizeable(bResizeable) {
+  enum class Direction {
+    UP = 0,
+    DOWN = 1,
+    LEFT,
+    RIGHT,
+    LEFTTOP,
+    LEFTBOTTOM,
+    RIGHTBOTTOM,
+    RIGHTTOP,
+    NONE
+  };
 
-    if (m_bTranslucentBackground) {
-      setAttribute(Qt::WA_TranslucentBackground);
-    }
+
+  FramelessWindow::FramelessWindow(bool translucentBackground, QWidget* parent = Q_NULLPTR)
+      : T(parent)
+      , m_bLeftPressed(false)
+      , m_bResizeable(false)
+      , m_bMaximize(false)
+      , m_Direction(Direction::NONE)
+      , m_iResizeRegionPadding(4) {
+    installEventFilter(this);
 
     Qt::WindowFlags flags = windowFlags();
-    setWindowFlags(flags | Qt::FramelessWindowHint | Qt::Window | Qt::WindowSystemMenuHint);
+    setWindowFlags( flags | Qt::FramelessWindowHint);
 
-    setResizeable(m_bResizeable);
-
-    HWND hWnd = (HWND)winId();
-    DWORD dwOldStyle = ::GetWindowLong(hWnd, GWL_STYLE);
-    DWORD dwNewStyle = dwOldStyle | selectBorderlessStyle();
-    
-    ::SetWindowLongPtrW(hWnd, GWL_STYLE, static_cast<LONG>(dwNewStyle));
-
-    SetShadow(m_bSystemShadow);
+    if (translucentBackground) {
+      setAttribute(Qt::WA_TranslucentBackground);
+    }
   }
 
   FramelessWindow::~FramelessWindow() {}
 
-  bool isCompositionEnabled() {
-    BOOL composition_enabled = FALSE;
-    bool success = ::DwmIsCompositionEnabled(&composition_enabled) == S_OK;
-    return composition_enabled && success;
-  }
+  void setTitlebar(QVector<QWidget*> titleBar) { m_titlebarWidget = titleBar; }
 
-  DWORD selectBorderlessStyle() {
-    if (isCompositionEnabled()) {
-      return WS_POPUP | WS_THICKFRAME | WS_CAPTION | WS_SYSMENU;
-    }
-    return WS_POPUP | WS_THICKFRAME | WS_SYSMENU;
-  }
-
-  void SetShadow(bool bEnabled) {
-    if (isCompositionEnabled()) {
-      static const MARGINS shadow_state[2]{{0, 0, 0, 0}, {1, 1, 1, 1}};
-      ::DwmExtendFrameIntoClientArea((HWND)winId(), &shadow_state[bEnabled ? 1 : 0]);
-    }
-  }
-
-  void setTitlebar(QVector<QWidget*> titleBarWidget,
-                   QVector<QWidget*> exceptWidgetPointer,
-                   QVector<QString> exceptWidgetType) {
-    m_titlebarWidget = titleBarWidget;
-    m_titlebarExceptWidgetPointer = exceptWidgetPointer;
-    m_titleBarExceptWidgetType = exceptWidgetType;
-  }
-
-  void setResizeable(bool b) { 
-    m_bResizeable = b; 
-
-    if (m_bResizeable) {
-      setWindowFlags(windowFlags() | Qt::WindowMaximizeButtonHint);
-    }
-    else {
-      setWindowFlags(windowFlags() & ~Qt::WindowMaximizeButtonHint);
-    }
-  }
+  void setResizeable(bool b) { m_bResizeable = b; }
 
   bool resizeable() const { return m_bResizeable; }
 
-
- protected:
-  bool nativeEvent(const QByteArray& eventType, void* message, long* result) {
-    MSG* msg = reinterpret_cast<MSG*>(message);
-
-    switch (msg->message) {
-      case WM_NCCALCSIZE: {
-        //NCCALCSIZE_PARAMS& params = *reinterpret_cast<NCCALCSIZE_PARAMS*>(msg->lParam);
-        //if (params.rgrc[0].top != 0)
-        //  params.rgrc[0].top -= 1;
-
-        //this kills the window frame and title bar we added with WS_THICKFRAME and WS_CAPTION
-        //*result = WVR_REDRAW;
-        //if (msg->wParam == TRUE) {
-        //  return true;
-        //}
-        //return false;
-
-        if (msg->wParam == TRUE) {
-          *result = 0;
-          return true;
-        }
-        return false;
+  void setAllWidgetMouseTracking(QWidget* widget) {
+    if (!widget)
+      return;
+    widget->setMouseTracking(true);
+    QObjectList list = widget->children();
+    foreach (QObject* obj, list) {
+      if (obj->metaObject()->className() == QStringLiteral("QWidget")) {
+        QWidget* w = (QWidget*)obj;
+        w->setMouseTracking(true);
+        setAllWidgetMouseTracking(w);
       }
-      case WM_NCACTIVATE: {
-        if (!isCompositionEnabled())
-          return true;
-        return false;
-      }
-      case WM_NCHITTEST: {
-        *result = 0;
-        double dpr = this->devicePixelRatioF();
-        long iPadding = 5.0f * dpr;
-        RECT winRect;
-        HWND hWnd = (HWND)winId();
-        ::GetClientRect(hWnd, &winRect);
-
-        POINT mousePT;
-        mousePT.x = GET_X_LPARAM(msg->lParam);
-        mousePT.y = GET_Y_LPARAM(msg->lParam);
-        //qInfo() << "Screen Mouse Pos: " << mousePT.x << ", " << mousePT.y;
-        ::ScreenToClient(hWnd, &mousePT);
-        //qInfo() << "Client Mouse Pos: " << mousePT.x << ", " << mousePT.y;
-
-        if (m_bResizeable) {
-          bool bResizeWidth = minimumWidth() != maximumWidth();
-          bool bResizeHeight = minimumHeight() != maximumHeight();
-
-          if (m_bTranslucentBackground) {
-            QMargins margins = contentsMargins();
-
-            winRect.left += margins.left();
-            winRect.top += margins.top();
-            winRect.right -= margins.right();
-            winRect.bottom -= margins.bottom();
-          }
-
-          if (bResizeWidth) {
-            //left border
-            if (mousePT.x >= winRect.left && mousePT.x < winRect.left + iPadding) {
-              *result = HTLEFT;
-            }
-            //right border
-            if (mousePT.x < winRect.right && mousePT.x >= winRect.right - iPadding) {
-              *result = HTRIGHT;
-            }
-          }
-
-          if (bResizeHeight) {
-            //bottom border
-            if (mousePT.y < winRect.bottom && mousePT.y >= winRect.bottom - iPadding) {
-              *result = HTBOTTOM;
-            }
-            //top border
-            if (mousePT.y >= winRect.top && mousePT.y < winRect.top + iPadding) {
-              *result = HTTOP;
-            }
-          }
-
-          if (bResizeWidth && bResizeHeight) {
-            //bottom left corner
-            if (mousePT.x >= winRect.left && mousePT.x < winRect.left + iPadding &&
-                mousePT.y < winRect.bottom && mousePT.y >= winRect.bottom - iPadding) {
-              *result = HTBOTTOMLEFT;
-            }
-            //bottom right corner
-            if (mousePT.x < winRect.right && mousePT.x >= winRect.right - iPadding &&
-                mousePT.y < winRect.bottom && mousePT.y >= winRect.bottom - iPadding) {
-              *result = HTBOTTOMRIGHT;
-            }
-            //top left corner
-            if (mousePT.x >= winRect.left && mousePT.x < winRect.left + iPadding &&
-                mousePT.y >= winRect.top && mousePT.y < winRect.top + iPadding) {
-              *result = HTTOPLEFT;
-            }
-            //top right corner
-            if (mousePT.x < winRect.right && mousePT.x >= winRect.right - iPadding &&
-                mousePT.y >= winRect.top && mousePT.y < winRect.top + iPadding) {
-              *result = HTTOPRIGHT;
-            }
-          }
-        }
-        if (*result)
-          return true;
-
-        QMargins margins = contentsMargins();
-        //qInfo() << "margins:" << margins;
-        //qInfo() << "x: " << mousePT.x << ", y: " << mousePT.y;
-        QPoint pos(mousePT.x / dpr - margins.left(), mousePT.y  / dpr - margins.top() );
-
-        bool bInTitleBar = false;
-        bool bExcept = false;
-        for (auto& w : m_titlebarWidget) {
-          if (w->rect().contains(pos)) {
-            QWidget* child = w->childAt(pos);
-            if (child) {
-              //qInfo() << child;
-              bExcept = false;
-              for (auto& e : m_titlebarExceptWidgetPointer) {
-                //qInfo() << child->objectName() << ", " << e->objectName();
-                if (child->objectName() == e->objectName()) {
-                  bExcept = true;
-                  break;
-                }
-              }
-
-              if (!bExcept) {
-                for (auto& e : m_titleBarExceptWidgetType) {
-                  if (child->inherits(e.toLocal8Bit())) {
-                    bExcept = true;
-                    break;
-                  }
-                }
-              }
-              if (!bExcept)
-                bInTitleBar = true;
-            }
-            else {
-              bInTitleBar = true;
-            }
-            break;
-          }
-        }
-
-        if (!bInTitleBar)
-          return false;
-
-        *result = HTCAPTION;
-        return true;
-      }
-
-      default:
-        return T::nativeEvent(eventType, message, result);
     }
   }
 
  protected:
-  bool m_bResizeable;
-  bool m_bSystemShadow;
-  bool m_bTranslucentBackground;
-  QVector<QWidget*> m_titlebarWidget;
-  QVector<QWidget*> m_titlebarExceptWidgetPointer;
-  QVector<QString> m_titleBarExceptWidgetType;
+  bool eventFilter(QObject* target, QEvent* event) {
+    if (event->type() == QEvent::Paint) {
+      static bool first = false;
+      if (!false) {
+        first = true;
+        setAllWidgetMouseTracking(this);
+      }
+    }
+    else if (event->type() == QEvent::WindowStateChange) {
+      m_bMaximize = this->windowState() & Qt::WindowMaximized;
+    }
+    return T::eventFilter(target, event);
+  }
 
-  QMargins m_margins;
-  QMargins m_frames;
+  void mouseDoubleClickEvent(QMouseEvent *event) {
+    if (m_bResizeable) {
+      QWidget* actionWidget = QApplication::widgetAt(event->globalPos());
+      if (actionWidget) {
+        bool inTitlebar = false;
+        for (auto& item : m_titlebarWidget) {
+          if (actionWidget == item) {
+            inTitlebar = true;
+            break;
+          }
+        }
+        if (inTitlebar) {
+          if (m_bMaximize) {
+            this->showNormal();
+          }
+          else {
+            this->showMaximized();
+          }
+        }
+      }
+    }
+    T::mouseDoubleClickEvent(event);
+  }
+
+  void mousePressEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton) {
+      if (m_Direction != Direction::NONE) {
+        m_bLeftPressed = true;
+        this->mouseGrabber();
+      }
+      else {
+        QWidget* action = QApplication::widgetAt(event->globalPos());
+        if (action) {
+          bool inTitlebar = false;
+          for (auto& item : m_titlebarWidget) {
+            if (action == item) {
+              inTitlebar = true;
+              break;
+            }
+          }
+          if (inTitlebar) {
+            m_bLeftPressed = true;
+            m_DragPos = event->globalPos() - this->frameGeometry().topLeft();
+          }
+        }
+      }
+    }
+    return T::mousePressEvent(event);
+  }
+
+  void mouseMoveEvent(QMouseEvent* event) {
+    QPoint globalPoint = event->globalPos();
+    if (m_bLeftPressed) {
+      bool bIgnore = true;
+      QList<QScreen*> screens = QGuiApplication::screens();
+      for (int i = 0; i < screens.size(); i++) {
+        QScreen* pScreen = screens[i];
+        QRect geometryRect = pScreen->availableGeometry();
+        if (geometryRect.contains(globalPoint)) {
+          bIgnore = false;
+          break;
+        }
+      }
+
+      if (bIgnore) {
+        event->ignore();
+        return;
+      }
+
+      if (m_Direction != Direction::NONE) {
+        QRect rect = this->rect();
+        QPoint tl = mapToGlobal(rect.topLeft());
+        QPoint rb = mapToGlobal(rect.bottomRight());
+
+        QRect rMove(tl, rb);
+
+        switch (m_Direction) {
+          case Direction::LEFT:
+            if (rb.x() - globalPoint.x() <= this->minimumWidth())
+              rMove.setX(tl.x());
+            else
+              rMove.setX(globalPoint.x());
+            break;
+          case Direction::RIGHT:
+            rMove.setWidth(globalPoint.x() - tl.x());
+            break;
+          case Direction::UP:
+            if (rb.y() - globalPoint.y() <= this->minimumHeight())
+              rMove.setY(tl.y());
+            else
+              rMove.setY(globalPoint.y());
+            break;
+          case Direction::DOWN:
+            rMove.setHeight(globalPoint.y() - tl.y());
+            break;
+          case Direction::LEFTTOP:
+            if (rb.x() - globalPoint.x() <= this->minimumWidth())
+              rMove.setX(tl.x());
+            else
+              rMove.setX(globalPoint.x());
+            if (rb.y() - globalPoint.y() <= this->minimumHeight())
+              rMove.setY(tl.y());
+            else
+              rMove.setY(globalPoint.y());
+            break;
+          case Direction::RIGHTTOP:
+            rMove.setWidth(globalPoint.x() - tl.x());
+            rMove.setY(globalPoint.y());
+            break;
+          case Direction::LEFTBOTTOM:
+            rMove.setX(globalPoint.x());
+            rMove.setHeight(globalPoint.y() - tl.y());
+            break;
+          case Direction::RIGHTBOTTOM:
+            rMove.setWidth(globalPoint.x() - tl.x());
+            rMove.setHeight(globalPoint.y() - tl.y());
+            break;
+          default:
+
+            break;
+        }
+        this->setGeometry(rMove);
+      }
+      else {
+        this->move(event->globalPos() - m_DragPos);
+        event->accept();
+      }
+    }
+    else {
+      region(globalPoint);
+    }
+
+    return T::mouseMoveEvent(event);
+  }
+
+  void region(const QPoint& cursorGlobalPoint) {
+    if (!m_bResizeable)
+      return;
+
+    QRect rect = this->contentsRect();
+    QPoint tl = mapToGlobal(rect.topLeft());
+    QPoint rb = mapToGlobal(rect.bottomRight());
+    int x = cursorGlobalPoint.x();
+    int y = cursorGlobalPoint.y();
+
+    if (tl.x() + m_iResizeRegionPadding >= x && tl.x() <= x &&
+        tl.y() + m_iResizeRegionPadding >= y && tl.y() <= y) {
+      m_Direction = Direction::LEFTTOP;
+      this->setCursor(QCursor(Qt::SizeFDiagCursor));
+    }
+    else if (x >= rb.x() - m_iResizeRegionPadding && x <= rb.x() &&
+             y >= rb.y() - m_iResizeRegionPadding && y <= rb.y()) {
+      m_Direction = Direction::RIGHTBOTTOM;
+      this->setCursor(QCursor(Qt::SizeFDiagCursor));
+    }
+    else if (x <= tl.x() + m_iResizeRegionPadding && x >= tl.x() &&
+             y >= rb.y() - m_iResizeRegionPadding && y <= rb.y()) {
+      m_Direction = Direction::LEFTBOTTOM;
+      this->setCursor(QCursor(Qt::SizeBDiagCursor));
+    }
+    else if (x <= rb.x() && x >= rb.x() - m_iResizeRegionPadding && y >= tl.y() &&
+             y <= tl.y() + m_iResizeRegionPadding) {
+      m_Direction = Direction::RIGHTTOP;
+      this->setCursor(QCursor(Qt::SizeBDiagCursor));
+    }
+    else if (x <= tl.x() + m_iResizeRegionPadding && x >= tl.x()) {
+      m_Direction = Direction::LEFT;
+      this->setCursor(QCursor(Qt::SizeHorCursor));
+    }
+    else if (x <= rb.x() && x >= rb.x() - m_iResizeRegionPadding) {
+      m_Direction = Direction::RIGHT;
+      this->setCursor(QCursor(Qt::SizeHorCursor));
+    }
+    else if (y >= tl.y() && y <= tl.y() + m_iResizeRegionPadding) {
+      m_Direction = Direction::UP;
+      this->setCursor(QCursor(Qt::SizeVerCursor));
+    }
+    else if (y <= rb.y() && y >= rb.y() - m_iResizeRegionPadding) {
+      m_Direction = Direction::DOWN;
+      this->setCursor(QCursor(Qt::SizeVerCursor));
+    }
+    else {
+      m_Direction = Direction::NONE;
+      this->setCursor(QCursor(Qt::ArrowCursor));
+    }
+  }
+
+  void mouseReleaseEvent(QMouseEvent* event) {
+    m_bLeftPressed = false;
+    if (m_Direction != Direction::NONE) {
+      m_Direction = Direction::NONE;
+      this->releaseMouse();
+      this->setCursor(QCursor(Qt::ArrowCursor));
+    }
+    return QWidget::mouseReleaseEvent(event);
+  }
+
+  void resizeEvent(QResizeEvent* event) { return QWidget::resizeEvent(event); }
+
+ protected:
+  bool m_bLeftPressed;
+  bool m_bResizeable;
+  bool m_bMaximize;
+  Direction m_Direction;
+  const int m_iResizeRegionPadding;
+  QPoint m_DragPos;
+  QVector<QWidget*> m_titlebarWidget;
 };
 
 static void loadStyleSheetFile(const QString& sheetName, QWidget* widget) {

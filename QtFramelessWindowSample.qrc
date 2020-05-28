@@ -3,6 +3,6 @@
         <file>Resources/main.css</file>
         <file>Resources/close.svg</file>
         <file>Resources/close_h.svg</file>
-        <file>Resources/SetttingWnd.css</file>
+        <file>Resources/DialogSample.css</file>
     </qresource>
 </RCC>

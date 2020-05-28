@@ -1,12 +1,25 @@
-#centralWidget {
-	background-color: rgb(255,255,255);
-	border-radius: 8px;
-    border: 1px solid rgb(79, 133, 233);
+#widgetCentral {
+    background-color: rgb(255,255,255);
+    border-radius: 8px;
+    border: 2px solid rgb(79, 133, 233);
 }
 
 
-#widgetTitlebar {
-    border-top-right-radius: 8px;
-    border-top-left-radius: 8px;
+#widgetTitle {
 	background-color: rgb(79, 133, 233);
+}
+
+#labelTitle {
+    color: rgb(255, 255, 255);
+    font-size: 14px;
+}
+
+#pushButtonClose {
+    border: none;
+    image: url(:/QtFramelessWindowSample/Resources/close.svg);
+}
+
+#pushButtonClose:hover {
+    border: none;
+    image: url(:/QtFramelessWindowSample/Resources/close_h.svg);
 }
