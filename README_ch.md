@@ -13,7 +13,7 @@
 在Qt中实现无边框窗体有2种方案：
 
 ## 2.1 方案一
-重载`nativeEvent`函数来Hook Windows消息（如`WM_NCHITTEST`）实现，大致步骤如下：
+通过重载`nativeEvent`函数拦截Windows消息（如`WM_NCHITTEST`）来实现，大致步骤如下：
 1. 给窗体设置`WS_THICKFRAME | WS_CAPTION`属性从而还原窗体边框和标题栏，这样窗体就可以接收到`WM_NCHITTEST`消息。
 2. 在`WM_NCCALCSIZE`消息处理中再移除边框和标题栏。
 3. 在`WM_NCHITTEST`消息处理中通过判断鼠标位置来设置鼠标行为（`HTLEFT`, `HTRIGHT`等）。
