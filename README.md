@@ -3,12 +3,12 @@
 # 1. FramelessWindow
 When I started using Qt as UI library, I found that Qt didn't provide a perfect borderless window solution to support the following functions, and I have to implement these functions by myself:
 
-1. Support to change the position and size of the window by dragging the mouse; `[Support]`
-2. Support double-click the title bar to maximize/restore the window; `[Support]`
+1. Support to change the position and size of the window by dragging the mouse; ✅
+2. Support double-click the title bar to maximize/restore the window; ✅
 3. Support `Windows Areo Snap` feature;
 4. Support system shadow;
-5. Support dragging across screens that have different DPI; `[Support]`
-6. Automatically adapt to changes in resolution and DPI; `[Support]`
+5. Support dragging across screens that have different DPI; ✅
+6. Automatically adapt to changes in resolution and DPI; ✅
 
 # 2. Implementation scheme comparison
 There are two schemes for implementing borderless windows in Qt.
@@ -35,7 +35,7 @@ By setting MouseTracking for each Widget, make sure each Widget can respond to m
 
 Although the logic for judging the position of the mouse is cumbersome in this way, the compatibility is better and pure, and it does not need to process various messages of Windows.
 
-**This project is implemented in this way, and can support all the features of the borderless form except "Windows Areo Snap" and "System Shadow" features mentioned above.**
+👉 **This project is implemented in this way, and can support all the features of the borderless form except "Windows Areo Snap" and "System Shadow" features mentioned above.**
 
 
 # Screenshot On Windows
