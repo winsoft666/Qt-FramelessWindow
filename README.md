@@ -35,8 +35,7 @@ By setting MouseTracking for each Widget, make sure each Widget can respond to m
 
 Although the logic for judging the position of the mouse is cumbersome in this way, the compatibility is better and pure, and it does not need to process various messages of Windows.
 
-
-** This project is implemented in this way, and can support all the features of the borderless form except "Windows Areo Snap" and `System Shadow` features mentioned above **.
+**This project is implemented in this way, and can support all the features of the borderless form except "Windows Areo Snap" and "System Shadow" features mentioned above.**
 
 
 # Screenshot On Windows
