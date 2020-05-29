@@ -1,12 +1,14 @@
 [>>> 中文版](README_ch.md)
 
 # 1. FramelessWindow
-When I started using Qt as UI library, I found that Qt didn't provide a perfect borderless window solution to support the following functions, and I have to implement these functions myself:
-1. Support to change the position and size of the window by dragging the mouse.
-2. Support double-click the title bar to maximize/restore the window;
+When I started using Qt as UI library, I found that Qt didn't provide a perfect borderless window solution to support the following functions, and I have to implement these functions by myself:
+
+1. Support to change the position and size of the window by dragging the mouse; `[Support]`
+2. Support double-click the title bar to maximize/restore the window; `[Support]`
 3. Support `Windows Areo Snap` feature;
-4. Support dragging across screens that have different DPI;
-5. Automatically adapt to changes in resolution and DPI;
+4. Support system shadow;
+5. Support dragging across screens that have different DPI; `[Support]`
+6. Automatically adapt to changes in resolution and DPI; `[Support]`
 
 # 2. Implementation scheme comparison
 There are two schemes for implementing borderless windows in Qt.
@@ -19,9 +21,9 @@ By overriding `nativeEvent` function to hook windows message(such as 'WM_NCHITTE
 
 3. Set the mouse behavior (`HTLEFT`,` HTRIGHT`, etc.) by judging the mouse position in the `WM_NCHITTEST` message processing.
 
-The advantage of this solution is that it can support the `Windows Areo Snap` feature, but it is very complicated for message processing and needs to be compatible with various versions of Qt. At present, I have not found a solution to achieve a perfect borderless through this solution.
+The advantage of this solution is that it can support the `Windows Areo Snap` and `System Shodow` feature, but it is very complicated for message processing and needs to be compatible with various versions of Qt. At present, I have not found a solution to achieve a perfect borderless through this solution.
 
-As far as I know, the following open source projects are implemented in this way, but there are some problems, such as not supporting drag across screens that have different DPI screens, unable to adapt to resolution and DPI changes, and `WM_NCHITTEST` sometimes not responding, etc. 
+As far as I know, the following open source projects are implemented in this way, but there are some problems, such as not supporting drag across screens that have different DPI screens, unable to adapt to resolution and DPI changes, and `WM_NCHITTEST` sometimes not responding, etc. In addition, after setting the background transparency property (such as `Qt :: WA_TranslucentBackground`), the system shadow feature will also disappear.
 
 - qtdevs/FramelessHelper: [https://github.com/qtdevs/FramelessHelper](https://github.com/qtdevs/FramelessHelper)
 - wangwenx190/framelesshelper: [https://github.com/wangwenx190/framelesshelper](https://github.com/wangwenx190/framelesshelper)
@@ -34,7 +36,7 @@ By setting MouseTracking for each Widget, make sure each Widget can respond to m
 Although the logic for judging the position of the mouse is cumbersome in this way, the compatibility is better and pure, and it does not need to process various messages of Windows.
 
 
-** This project is implemented in this way, and can support all the features of the borderless form except the "Windows Areo Snap" feature mentioned above **.
+** This project is implemented in this way, and can support all the features of the borderless form except "Windows Areo Snap" and `System Shadow` features mentioned above **.
 
 
 # Screenshot On Windows
