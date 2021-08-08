@@ -44,8 +44,10 @@ class FramelessWindow : public T {
       , m_bLeftPressed(false)
       , m_bResizeable(false)
       , m_bMaximize(false)
+      , m_bUseSystemMove(false)
       , m_Direction(Direction::NONE)
       , m_iResizeRegionPadding(4) {
+    m_iResizeRegionPadding = m_iResizeRegionPadding * this->devicePixelRatioF();
     installEventFilter(this);
 
     Qt::WindowFlags flags = windowFlags();
@@ -136,6 +138,10 @@ class FramelessWindow : public T {
           if (inTitlebar) {
             m_bLeftPressed = true;
             m_DragPos = event->globalPos() - this->frameGeometry().topLeft();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+            m_bUseSystemMove = this->windowHandle()->startSystemMove();
+            Q_ASSERT(m_bUseSystemMove);
+#endif
           }
         }
       }
@@ -211,13 +217,14 @@ class FramelessWindow : public T {
             rMove.setHeight(globalPoint.y() - tl.y());
             break;
           default:
-
             break;
         }
         this->setGeometry(rMove);
       }
       else {
-        this->move(event->globalPos() - m_DragPos);
+        if (!m_bUseSystemMove) {
+          this->move(event->globalPos() - m_DragPos);
+        }
         event->accept();
       }
     }
@@ -296,8 +303,9 @@ class FramelessWindow : public T {
   bool m_bLeftPressed;
   bool m_bResizeable;
   bool m_bMaximize;
+  bool m_bUseSystemMove;
   Direction m_Direction;
-  const int m_iResizeRegionPadding;
+  int m_iResizeRegionPadding;
   QPoint m_DragPos;
   QVector<QWidget*> m_titlebarWidget;
 };
@@ -308,7 +316,7 @@ static void loadStyleSheetFile(const QString& sheetName, QWidget* widget) {
     QFile qssFile(sheetName);
     qssFile.open(QFile::ReadOnly);
     if (qssFile.isOpen()) {
-      qss = QLatin1String(qssFile.readAll());
+      qss = QString::fromUtf8(qssFile.readAll());
       widget->setStyleSheet(qss);
       qssFile.close();
     }
