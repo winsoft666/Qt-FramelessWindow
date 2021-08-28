@@ -43,7 +43,6 @@ class FramelessWindow : public T {
       : T(parent)
       , m_bLeftPressed(false)
       , m_bResizeable(false)
-      , m_bMaximize(false)
       , m_bUseSystemMove(false)
       , m_Direction(Direction::NONE)
       , m_iResizeRegionPadding(4) {
@@ -89,9 +88,6 @@ class FramelessWindow : public T {
         setAllWidgetMouseTracking(this);
       }
     }
-    else if (event->type() == QEvent::WindowStateChange) {
-      m_bMaximize = this->windowState() & Qt::WindowMaximized;
-    }
     return T::eventFilter(target, event);
   }
 
@@ -107,7 +103,7 @@ class FramelessWindow : public T {
           }
         }
         if (inTitlebar) {
-          if (m_bMaximize) {
+          if (this->isMaximized()) {
             this->showNormal();
           }
           else {
@@ -302,7 +298,6 @@ class FramelessWindow : public T {
  protected:
   bool m_bLeftPressed;
   bool m_bResizeable;
-  bool m_bMaximize;
   bool m_bUseSystemMove;
   Direction m_Direction;
   int m_iResizeRegionPadding;
