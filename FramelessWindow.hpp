@@ -136,7 +136,7 @@ class FramelessWindow : public T {
             m_DragPos = event->globalPos() - this->frameGeometry().topLeft();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
             m_bUseSystemMove = this->windowHandle()->startSystemMove();
-            Q_ASSERT(m_bUseSystemMove);
+            Q_ASSERT_X(m_bUseSystemMove, "mousePressEvent()", "this->windowHandle()->startSystemMove() failed");
 #endif
           }
         }
@@ -305,7 +305,7 @@ class FramelessWindow : public T {
   QVector<QWidget*> m_titlebarWidget;
 };
 
-static void loadStyleSheetFile(const QString& sheetName, QWidget* widget) {
+inline void loadStyleSheetFile(const QString& sheetName, QWidget* widget) {
   if (widget) {
     QString qss;
     QFile qssFile(sheetName);
