@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2020 - 2025, winsoft666, <winsoft666@outlook.com>.
+ * Copyright (C) 2020 - 2022, winsoft666, <winsoft666@outlook.com>.
  *
  * THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
  * EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
@@ -38,35 +38,40 @@ class FramelessWindow : public T {
     NONE
   };
 
-
-  FramelessWindow::FramelessWindow(bool translucentBackground, QWidget* parent = Q_NULLPTR)
+  FramelessWindow(bool translucentBackground, QWidget* parent = Q_NULLPTR, bool enabled = true)
       : T(parent)
+      , m_enabled(enabled)
       , m_bLeftPressed(false)
       , m_bResizeable(false)
       , m_bUseSystemMove(false)
       , m_Direction(Direction::NONE)
       , m_iResizeRegionPadding(4) {
-    m_iResizeRegionPadding = m_iResizeRegionPadding * this->devicePixelRatioF();
-    installEventFilter(this);
+    if (m_enabled) {
+      m_iResizeRegionPadding = m_iResizeRegionPadding * this->devicePixelRatioF();
+      installEventFilter(this);
 
-    Qt::WindowFlags flags = windowFlags();
-    setWindowFlags( flags | Qt::FramelessWindowHint);
+      Qt::WindowFlags flags = windowFlags();
+      setWindowFlags(flags | Qt::FramelessWindowHint);
 
-    if (translucentBackground) {
-      setAttribute(Qt::WA_TranslucentBackground);
+      if (translucentBackground) {
+        setAttribute(Qt::WA_TranslucentBackground);
+      }
     }
   }
 
-  FramelessWindow::~FramelessWindow() {}
+  ~FramelessWindow() = default;
 
-  void setTitlebar(QVector<QWidget*> titleBar) { m_titlebarWidget = titleBar; }
+  void setTitlebar(QVector<QWidget*> titleBar) {
+    if (m_enabled)
+      m_titlebarWidget = titleBar;
+  }
 
   void setResizeable(bool b) { m_bResizeable = b; }
 
   bool resizeable() const { return m_bResizeable; }
 
   void setAllWidgetMouseTracking(QWidget* widget) {
-    if (!widget)
+    if (!widget || !m_enabled)
       return;
     widget->setMouseTracking(true);
     QObjectList list = widget->children();
@@ -91,7 +96,7 @@ class FramelessWindow : public T {
     return T::eventFilter(target, event);
   }
 
-  void mouseDoubleClickEvent(QMouseEvent *event) {
+  void mouseDoubleClickEvent(QMouseEvent* event) {
     if (m_bResizeable) {
       QWidget* actionWidget = QApplication::widgetAt(event->globalPos());
       if (actionWidget) {
@@ -136,7 +141,8 @@ class FramelessWindow : public T {
             m_DragPos = event->globalPos() - this->frameGeometry().topLeft();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
             m_bUseSystemMove = this->windowHandle()->startSystemMove();
-            Q_ASSERT_X(m_bUseSystemMove, "mousePressEvent()", "this->windowHandle()->startSystemMove() failed");
+            Q_ASSERT_X(m_bUseSystemMove, "mousePressEvent()",
+                       "this->windowHandle()->startSystemMove() failed");
 #endif
           }
         }
@@ -296,6 +302,7 @@ class FramelessWindow : public T {
   void resizeEvent(QResizeEvent* event) { return QWidget::resizeEvent(event); }
 
  protected:
+  const bool m_enabled;
   bool m_bLeftPressed;
   bool m_bResizeable;
   bool m_bUseSystemMove;

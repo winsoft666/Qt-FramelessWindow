@@ -1,15 +1,12 @@
 #include "MainWindowSample.h"
 #include "DialogSample.h"
 
-
 MainWindowSample::MainWindowSample(QWidget* parent)
-    : FramelessWindow<QMainWindow>(true, parent)
-{
+    : FramelessWindow<QMainWindow>(true, parent, true) {
   setupUi();
   setTitlebar({widgetTitle_, labelTitle_});
   setResizeable(true);
   loadStyleSheetFile(":/QtFramelessWindowSample/Resources/main.css", this);
-
 
   connect(pushButtonClose_, &QPushButton::clicked, [this]() { this->close(); });
 
@@ -29,7 +26,8 @@ MainWindowSample::MainWindowSample(QWidget* parent)
 }
 
 void MainWindowSample::resizeEvent(QResizeEvent* event) {
-  labelTitle_->setText(QString("Frameless Window (Title Height: %1px)").arg(widgetTitle_->height()));  
+  labelTitle_->setText(
+      QString("Frameless Window (Title Height: %1px)").arg(widgetTitle_->height()));
   pushButtonH_->setText(QString::number(pushButtonH_->width()));
   pushButtonV_->setText(QString::number(pushButtonV_->height()));
 

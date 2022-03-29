@@ -2,8 +2,7 @@
 #include <QGraphicsDropShadowEffect>
 
 DialogSample::DialogSample(QWidget* parent /*= nullptr*/)
-    : FramelessWindow<QDialog>(true, parent), shadow_(nullptr) {
-
+    : FramelessWindow<QDialog>(true, parent, true), shadow_(nullptr) {
   setAttribute(Qt::WA_DeleteOnClose, true);
   setupUi();
   setWindowTitle("Dialog Sample");
