@@ -130,6 +130,8 @@ class FramelessWindow : public T {
       if (m_Direction != Direction::NONE) {
         m_bLeftPressed = true;
         this->mouseGrabber();
+
+        onBeginManualResize();
       }
       else {
         QWidget* action = QApplication::widgetAt(event->globalPos());
@@ -305,12 +307,16 @@ class FramelessWindow : public T {
       m_Direction = Direction::NONE;
       this->releaseMouse();
       this->setCursor(QCursor(Qt::ArrowCursor));
+
+      onEndManualResize();
     }
     return T::mouseReleaseEvent(event);
   }
 
   void resizeEvent(QResizeEvent* event) { return T::resizeEvent(event); }
 
+  virtual void onBeginManualResize() {}
+  virtual void onEndManualResize() {}
  protected:
   const bool m_enabled;
   bool m_bLeftPressed;
