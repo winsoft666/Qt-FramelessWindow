@@ -48,7 +48,7 @@ class FramelessWindow : public T {
       , m_iResizeRegionPadding(4) {
     if (m_enabled) {
       m_iResizeRegionPadding = m_iResizeRegionPadding * this->devicePixelRatioF();
-      installEventFilter(this);
+      this->installEventFilter(this);
 
       Qt::WindowFlags flags = windowFlags();
       setWindowFlags(flags | Qt::FramelessWindowHint);
@@ -66,9 +66,14 @@ class FramelessWindow : public T {
       m_titlebarWidget = titleBar;
   }
 
-  void setResizeable(bool b) { m_bResizeable = b; }
+  void setResizeable(bool b, const QMargins& transparentMargins) { 
+      m_bResizeable = b; 
+      m_transparentMargsins = transparentMargins;
+  }
 
   bool resizeable() const { return m_bResizeable; }
+
+  QMargins transparentMargins() const { return m_transparentMargsins; }
 
   void setAllWidgetMouseTracking(QWidget* widget) {
     if (!widget || !m_enabled)
@@ -88,7 +93,7 @@ class FramelessWindow : public T {
   bool eventFilter(QObject* target, QEvent* event) {
     if (event->type() == QEvent::Paint) {
       static bool first = false;
-      if (!false) {
+      if (!first) {
         first = true;
         setAllWidgetMouseTracking(this);
       }
@@ -242,6 +247,11 @@ class FramelessWindow : public T {
       return;
 
     QRect rect = this->contentsRect();
+    rect.setLeft(rect.left() + m_transparentMargsins.left());
+    rect.setTop(rect.top() + m_transparentMargsins.top());
+    rect.setRight(rect.right() - m_transparentMargsins.right());
+    rect.setBottom(rect.bottom() - m_transparentMargsins.bottom());
+
     QPoint tl = mapToGlobal(rect.topLeft());
     QPoint rb = mapToGlobal(rect.bottomRight());
     int x = cursorGlobalPoint.x();
@@ -296,10 +306,10 @@ class FramelessWindow : public T {
       this->releaseMouse();
       this->setCursor(QCursor(Qt::ArrowCursor));
     }
-    return QWidget::mouseReleaseEvent(event);
+    return T::mouseReleaseEvent(event);
   }
 
-  void resizeEvent(QResizeEvent* event) { return QWidget::resizeEvent(event); }
+  void resizeEvent(QResizeEvent* event) { return T::resizeEvent(event); }
 
  protected:
   const bool m_enabled;
@@ -309,6 +319,7 @@ class FramelessWindow : public T {
   Direction m_Direction;
   int m_iResizeRegionPadding;
   QPoint m_DragPos;
+  QMargins m_transparentMargsins;
   QVector<QWidget*> m_titlebarWidget;
 };
 
