@@ -5,21 +5,21 @@ MainWindowSample::MainWindowSample(QWidget* parent)
     : FramelessWindow<QMainWindow>(true, parent, true) {
   setupUi();
   setTitlebar({widgetTitle_, labelTitle_});
-  setResizeable(true);
+  setResizeable(true, QMargins(2, 2, 2, 2));
   loadStyleSheetFile(":/QtFramelessWindowSample/Resources/main.css", this);
 
   connect(pushButtonClose_, &QPushButton::clicked, [this]() { this->close(); });
 
   connect(pushButtonDialog_, &QPushButton::clicked, [this]() {
     DialogSample* pWnd = new DialogSample(this);
-    pWnd->setResizeable(false);
+    pWnd->setResizeable(false, QMargins(0, 0, 0, 0));
     pWnd->setModal(true);
     pWnd->show();
   });
 
   connect(pushButtonResizableDialog_, &QPushButton::clicked, [this]() {
     DialogSample* pWnd = new DialogSample(this);
-    pWnd->setResizeable(true);
+    pWnd->setResizeable(true, QMargins(0, 0, 0, 0));
     pWnd->setModal(true);
     pWnd->show();
   });
