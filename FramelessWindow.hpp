@@ -233,7 +233,7 @@ protected:
         if (event->button() == Qt::LeftButton) {
             if (m_Direction != Direction::NONE) {
                 m_bLeftPressed = true;
-                this->mouseGrabber();
+                this->grabMouse();
             }
             else {
                 QWidget* action = QApplication::widgetAt(event->globalPos());
