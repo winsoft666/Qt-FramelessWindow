@@ -9,6 +9,7 @@ When I started using Qt as UI library, I found that Qt didn't provide a perfect 
 4. Support system shadow;
 5. Support dragging across screens that have different DPI; ✅
 6. Automatically adapt to changes in resolution and DPI; ✅
+7. Automatically near to screen edge; ✅
 
 # 2. Implementation scheme comparison
 There are two schemes for implementing borderless windows in Qt.
