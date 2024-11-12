@@ -32,6 +32,10 @@ MainWindowSample::MainWindowSample(QWidget* parent)
         pWnd->show();
     });
 
+    connect(chkNearToScreenEdge_, &QCheckBox::stateChanged, this, [this](int state) {
+        this->setNearToScreenEdge(state == Qt::Checked);
+    });
+
     connect(pushButtonResizableDialog_, &QPushButton::clicked, [this]() {
         DialogSample* pWnd = new DialogSample(this);
         pWnd->setResizeable(true, QMargins(0, 0, 0, 0));
@@ -87,6 +91,9 @@ void MainWindowSample::setupUi() {
     pushButtonDialog_->setCursor(QCursor(Qt::PointingHandCursor));
     pushButtonDialog_->setFixedSize(80, 26);
 
+    chkNearToScreenEdge_ = new QCheckBox("Near to Screen Edge");
+    chkNearToScreenEdge_->setChecked(this->nearToScreenEdge());
+
     pushButtonResizableDialog_ = new QPushButton();
     pushButtonResizableDialog_->setObjectName("pushButtonResizableDialog");
     pushButtonResizableDialog_->setText("Resizable Dialog");
@@ -99,6 +106,8 @@ void MainWindowSample::setupUi() {
     hlTitle->addWidget(labelTitle_);
     hlTitle->addStretch(2);
     hlTitle->addWidget(pushButtonDialog_);
+    hlTitle->addSpacing(12);
+    hlTitle->addWidget(chkNearToScreenEdge_);
     hlTitle->addStretch(1);
     hlTitle->addWidget(pushButtonClose_);
 

@@ -20,6 +20,7 @@ private:
     QLabel* labelTitle_;
     QPushButton* pushButtonClose_;
     QPushButton* pushButtonDialog_;
+    QCheckBox* chkNearToScreenEdge_;
     QPushButton* pushButtonResizableDialog_;
     QPushButton* pushButtonH_;
     QPushButton* pushButtonV_;
