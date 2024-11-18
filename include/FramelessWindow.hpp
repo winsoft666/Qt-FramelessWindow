@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2020 - 2023, winsoft666, <winsoft666@outlook.com>.
+ * Copyright (C) 2020 - 2024, winsoft666, <winsoft666@outlook.com>.
  *
  * THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND,
  * EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE IMPLIED
@@ -62,7 +62,7 @@ public:
         }
     }
 
-    ~FramelessWindow() = default;
+    virtual ~FramelessWindow() = default;
 
 public:
     void setTitlebar(QVector<QWidget*> titleBar) {
@@ -120,7 +120,7 @@ public:
 
         widget->setMouseTracking(true);
         QObjectList list = widget->children();
-        foreach (QObject* obj, list) {
+        foreach(QObject * obj, list) {
             QWidget* w = dynamic_cast<QWidget*>(obj);
             if (w) {
                 setAllWidgetMouseTracking(w);
@@ -252,7 +252,7 @@ protected:
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
                             m_bCurUseSystemMove = this->windowHandle()->startSystemMove();
                             Q_ASSERT_X(m_bCurUseSystemMove, "mousePressEvent()",
-                                       "this->windowHandle()->startSystemMove() failed");
+                                "this->windowHandle()->startSystemMove() failed");
 #endif
                         }
                     }
@@ -368,17 +368,17 @@ protected:
             this->setCursor(QCursor(Qt::SizeFDiagCursor));
         }
         else if (x >= rb.x() - m_iResizeRegionPadding && x <= rb.x() &&
-                 y >= rb.y() - m_iResizeRegionPadding && y <= rb.y()) {
+            y >= rb.y() - m_iResizeRegionPadding && y <= rb.y()) {
             m_Direction = Direction::RIGHTBOTTOM;
             this->setCursor(QCursor(Qt::SizeFDiagCursor));
         }
         else if (x <= tl.x() + m_iResizeRegionPadding && x >= tl.x() &&
-                 y >= rb.y() - m_iResizeRegionPadding && y <= rb.y()) {
+            y >= rb.y() - m_iResizeRegionPadding && y <= rb.y()) {
             m_Direction = Direction::LEFTBOTTOM;
             this->setCursor(QCursor(Qt::SizeBDiagCursor));
         }
         else if (x <= rb.x() && x >= rb.x() - m_iResizeRegionPadding && y >= tl.y() &&
-                 y <= tl.y() + m_iResizeRegionPadding) {
+            y <= tl.y() + m_iResizeRegionPadding) {
             m_Direction = Direction::RIGHTTOP;
             this->setCursor(QCursor(Qt::SizeBDiagCursor));
         }

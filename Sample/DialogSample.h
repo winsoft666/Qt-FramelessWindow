@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QtWidgets>
-#include "../FramelessWindow.hpp"
+#include "../include/FramelessWindow.hpp"
 
 class QGraphicsDropShadowEffect;
 

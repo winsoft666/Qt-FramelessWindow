@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../FramelessWindow.hpp"
+#include "../include/FramelessWindow.hpp"
 #include <QtWidgets>
 
 class MainWindowSample : public FramelessWindow<QMainWindow> {
