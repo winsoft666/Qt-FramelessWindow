@@ -41,3 +41,8 @@ Although the logic for judging the position of the mouse is cumbersome in this w
 
 # Screenshot On Windows
 ![screenshot on windows](frameless.gif)
+
+# 3. Sponsor
+Thank you for using this project. It would be a great pleasure for me if this project can be of help to you.
+
+**You can go to my Github [homepage](https://github.com/winsoft666) to make a donation.**

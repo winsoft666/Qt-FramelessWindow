@@ -37,3 +37,9 @@
 
 # Screenshot On Windows
 ![screenshot on windows](frameless.gif)
+
+# 3. 赞助
+
+感谢您能使用本项目，如果这个项目能对您产生帮助，对我而言也是一件非常开心的事情。
+
+**可以前往我的 Github [主页](https://github.com/winsoft666) 进行赞助。**
